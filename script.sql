@@ -32,7 +32,6 @@ create table Vehiculos(
     Color varchar(30) not null,
     Id_Cliente int,
     Foreign Key (Id_Cliente) REFERENCES Clientes(Id_Cliente),
-    KEY 
 );
 create INDEX idx_placa ON Vehiculos(Placa);
 
