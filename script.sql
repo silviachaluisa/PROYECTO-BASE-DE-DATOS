@@ -21,9 +21,6 @@ create table Clientes(
     Foreign Key (Tipo_Usuario) REFERENCES TipoUsuario(Id_Usuario)
 );
 
-
-
-
 create table Vehiculos(
     Placa varchar(10) PRIMARY KEY not null,
     Marca text not null,
