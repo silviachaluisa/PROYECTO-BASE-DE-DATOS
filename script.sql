@@ -1,4 +1,6 @@
+
 Use sql5681662;
+--CREACION TABLES MARCE Y SILVIA
 -- crear las tablas
 create table TipoUsuario{
     Id_Usuario int PRIMARY KEY not null,
@@ -7,7 +9,8 @@ create table TipoUsuario{
 }
 create table Clientes(
     Id_Cliente int primary key AUTO_INCREMENT,
-    Nombre VARCHAR(30) not null, 
+    Nombres VARCHAR(255) not null, 
+    Apellidos varchar (255)
     Cédula BIGINT not null UNIQUE,
     Contacto BIGINT not null,
     Correo text not null UNIQUE,
