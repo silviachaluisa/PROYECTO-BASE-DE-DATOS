@@ -1,22 +1,20 @@
-
 Use sql5681662;
---CREACION TABLES MARCE Y SILVIA
+-- CREACION TABLES MARCE Y SILVIA
 -- crear las tablas
-create table TipoUsuario{
+create table TipoUsuario(
     Id_Usuario int PRIMARY KEY not null,
     Tipo_Usuario text not null check(tipo_usuario in ("Administrador", "Ascesor", "Empleado", "Usuario"))
-
-}
+);
 create table Clientes(
     Id_Cliente int primary key AUTO_INCREMENT,
     Nombres VARCHAR(255) not null, 
-    Apellidos varchar (255)
+    Apellidos varchar (255),
     Cédula BIGINT not null UNIQUE,
     Contacto BIGINT not null,
     Correo text not null UNIQUE,
     Fecha_Nacimiento date not null,
     Contraseña VARCHAR(50) not NULL,
-    Dirección TEXT not null
+    Dirección TEXT not null,
     Tipo_Usuario int,
     Foreign Key (Tipo_Usuario) REFERENCES TipoUsuario(Id_Usuario)
 );
@@ -28,7 +26,7 @@ create table Vehiculos(
     Año int not null,
     Color varchar(30) not null,
     Id_Cliente int,
-    Foreign Key (Id_Cliente) REFERENCES Clientes(Id_Cliente),
+    Foreign Key (Id_Cliente) REFERENCES Clientes(Id_Cliente)
 );
 create INDEX idx_placa ON Vehiculos(Placa);
 
@@ -41,8 +39,6 @@ create table Mantenimiento(
     Garantia VARCHAR(5) not null check(garantia in ("si","no")),
     Fecha_Siguiente_Mantenimiento date not null
 )
-
-
 
 -- Generar 100 registros aleatorios
 DELIMITER $$
