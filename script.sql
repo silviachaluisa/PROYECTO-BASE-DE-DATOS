@@ -28,6 +28,7 @@ create table Vehiculos(
     Id_Cliente int,
     Foreign Key (Id_Cliente) REFERENCES Clientes(Id_Cliente)
 
+-- Registros aleatoreos de vehiculos
     DELIMITER $$
 CREATE PROCEDURE InsertarRegistrosAleatoriosVehiculos()
 BEGIN
