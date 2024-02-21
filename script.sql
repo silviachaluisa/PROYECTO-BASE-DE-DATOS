@@ -1,10 +1,11 @@
 Use sql5681662;
--- CREACION TABLES MARCE Y SILVIA
--- crear las tablas
+
+
 create table TipoUsuario(
     Id_Usuario int PRIMARY KEY not null,
-    Tipo_Usuario text not null check(tipo_usuario in ("Administrador", "Ascesor", "Empleado", "Usuario"))
+    Tipo_Usuario VARCHAR(255) not null check(Tipo_usuario in ("Administrador", "Ascesor", "Empleado", "Usuario"))
 );
+--CREAR TABLA USUARIOS---------------------------------------------------------------------------------
 create table Clientes(
     Id_Cliente int primary key AUTO_INCREMENT,
     Nombres VARCHAR(255) not null, 
@@ -19,6 +20,45 @@ create table Clientes(
     Foreign Key (Tipo_Usuario) REFERENCES TipoUsuario(Id_Usuario)
 );
 
+DELIMITER $$
+CREATE PROCEDURE InsertarRegistrosAleatoriosUsuarios()
+BEGIN
+    DECLARE contador INT DEFAULT 1;
+    DECLARE nombres VARCHAR(255);
+    DECLARE apellidos VARCHAR(255);
+    DECLARE cedula BIGINT;
+    DECLARE contacto BIGINT;
+    DECLARE correo TEXT;
+    DECLARE fecha_nacimiento DATE;
+    DECLARE contraseña VARCHAR(50);
+    DECLARE direccion TEXT;
+    DECLARE tipo_usuario INT;
+
+    WHILE contador <= 100 DO
+        -- Generar valores aleatorios para cada columna
+        SET nombres = CONCAT('Usuario', LPAD(FLOOR(RAND() * 1000), 3, '0'));
+        SET apellidos = CONCAT('Apellido', LPAD(FLOOR(RAND() * 1000), 3, '0'));
+        SET cedula = FLOOR(RAND() * 1000000000) + 1000000000;
+        SET contacto = FLOOR(RAND() * 1000000000) + 1000000000;
+        SET correo = CONCAT('usuario', contador, '@dominio.com');
+        SET fecha_nacimiento = DATE_ADD(CURRENT_DATE(), INTERVAL -FLOOR(RAND() * 365 * 30) DAY);
+        SET contraseña = CONCAT('Contraseña', LPAD(FLOOR(RAND() * 1000), 3, '0'));
+        SET direccion = CONCAT('Dirección', LPAD(FLOOR(RAND() * 1000), 3, '0'));
+        SET tipo_usuario = FLOOR(RAND() * 3) + 1; 
+
+     
+        INSERT INTO Clientes (Nombres, Apellidos, Cédula, Contacto, Correo, Fecha_Nacimiento, Contraseña, Dirección, Tipo_Usuario)
+        VALUES (nombres, apellidos, cedula, contacto, correo, fecha_nacimiento, contraseña, direccion, tipo_usuario);
+
+        SET contador = contador + 1;
+    END WHILE;
+END$$
+DELIMITER ;
+
+-- Llamar al procedimiento para insertar registros aleatorios en la tabla de usuarios
+CALL InsertarRegistrosAleatoriosUsuarios();
+------------------------------------------------------------------------------------------------------------------------
+--CREAR TABLA VEHICULOS
 create table Vehiculos(
     Placa varchar(10) PRIMARY KEY not null,
     Marca text not null,
@@ -79,11 +119,9 @@ SELECT * FROM Vehiculos; -- Consulta para ver los registros insertados en la tab
 
 
 
-
-
-
-
 create INDEX idx_placa ON Vehiculos(Placa);
+
+--CREAR TABLA MANTENIMIENTO
 
 create table Mantenimiento(
     Id_Mantenimiento int PRIMARY KEY not null,
