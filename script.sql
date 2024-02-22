@@ -224,7 +224,7 @@ BEGIN
 			WHEN 28 THEN "Inspección y mantenimiento de sistemas de seguridad (airbags, cinturones de seguridad, etc.)"
 			WHEN 29 THEN "Revisión y ajuste de la presión de los neumáticos"
 			WHEN 30 THEN "Inspección y mantenimiento de sistemas de seguridad (airbags, cinturones de seguridad, etc.)"
-			ELSE "Descripción predeterminada"
+			ELSE "Mantenimiento preventivo al vehiculo"
         END;
         SET costo = ROUND(RAND() * 1000, 2);
         SET garantia = IF(RAND() < 0.5, 'Si', 'No');
