@@ -58,6 +58,26 @@ DELIMITER ;
 -- Llamar al procedimiento para insertar registros aleatorios en la tabla de usuarios
 CALL InsertarRegistrosAleatoriosUsuarios();
 ------------------------------------------------------------------------------------------------------------------------
+-- CREAR TABLA EMPLEADOS----------------------------------------------------------------------------------------------------
+create table Empleados(
+    Id_Empleado int primary key AUTO_INCREMENT,
+    Nombres VARCHAR(255) not null, 
+    Apellidos varchar (255),
+    Cédula BIGINT not null UNIQUE,
+    Contacto BIGINT not null,
+    Correo text not null UNIQUE,
+    Fecha_Nacimiento date not null,
+    Contraseña VARCHAR(50) not NULL,
+    Cargo VARCHAR(255) not null,
+    Salario int not null,
+    Tipo_Usuario int,
+    Foreign Key (Tipo_Usuario) REFERENCES TipoUsuario(Id_Usuario)
+);
+------------------------------------------------------------------------------------------------------------------------------
+
+
+
+
 --CREAR TABLA VEHICULOS
 create table Vehiculos(
     Placa varchar(10) PRIMARY KEY not null,
