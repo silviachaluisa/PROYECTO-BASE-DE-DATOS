@@ -137,28 +137,52 @@ SELECT * FROM Vehiculos; -- Consulta para ver los registros insertados en la tab
 
 );
 
+--CREAR TABLA MANTENIMIENTO Y PLACAS
 
+Create table if NOT exists Placas(
+	id int PRIMARY KEY AUTO_INCREMENT,
+	placa text not null
+);
 
-create INDEX idx_placa ON Vehiculos(Placa);
-
---CREAR TABLA MANTENIMIENTO
-
-create table Mantenimiento(
+create table if not EXISTS Mantenimiento(
     Id_Mantenimiento int PRIMARY KEY not null,
-    Placa varchar(10),
+    Placa int,
     Fecha_Mantenimiento date not null,
     Descripcion text not null,
     Costo decimal(5, 2) not null,
     Garantia VARCHAR(5) not null check(garantia in ("si","no")),
-    Fecha_Siguiente_Mantenimiento date not null
-)
+    Fecha_Siguiente_Mantenimiento date not null,
+    FOREIGN KEY (Placa) REFERENCES Placas(id)
+);
+
+DELIMITER $$
+CREATE PROCEDURE InsertarPlacas()
+BEGIN
+    DECLARE placa text;
+	DECLARE contador int DEFAULT 1;
+    WHILE contador <= 100 DO
+		SET @letras = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        -- Generar valores aleatorios para cada columna
+        SET placa = CONCAT(
+						SUBSTRING(@letras, FLOOR(RAND() * LENGTH(@letras)) + 1, 1),
+						SUBSTRING(@letras, FLOOR(RAND() * LENGTH(@letras)) + 1, 1),
+						SUBSTRING(@letras, FLOOR(RAND() * LENGTH(@letras)) + 1, 1),
+						LPAD(FLOOR(RAND() * 1000), 3, '0')
+					);
+                    
+        INSERT INTO Placas (placa) VALUE (placa);
+
+        SET contador = contador + 1;
+    END WHILE;
+END$$
+DELIMITER ;
 
 -- Generar 100 registros aleatorios
 DELIMITER $$
-CREATE PROCEDURE InsertarRegistrosAleatorios()
+CREATE PROCEDURE InsertarRegistrosMantenimiento()
 BEGIN
     DECLARE contador INT DEFAULT 1;
-    DECLARE placa VARCHAR(10);
+    DECLARE placa int DEFAULT 1;
     DECLARE fecha_mantenimiento DATE;
     DECLARE descripcion TEXT;
     DECLARE costo DECIMAL(5, 2);
@@ -167,16 +191,55 @@ BEGIN
 
     WHILE contador <= 100 DO
         -- Generar valores aleatorios para cada columna
-        SET placa = CONCAT('Placa', LPAD(FLOOR(RAND() * 1000), 3, '0'));
+        SET placa = FLOOR(RAND() * 100)+1;
         SET fecha_mantenimiento = DATE_ADD(CURRENT_DATE(), INTERVAL -FLOOR(RAND() * 365) DAY);
-        SET descripcion = CONCAT('Mantenimiento para vehículo con placa ', placa);
+        SET descripcion = CASE floor(rand()*31)
+			WHEN 1 THEN "Inspección y cambio de filtro de aire"
+			WHEN 2 THEN "Reemplazo del filtro de aceite"
+			WHEN 3 THEN "Rotación de neumáticos"
+			WHEN 4 THEN "Alineación de ruedas"
+			WHEN 5 THEN "Cambio de bujías"
+			WHEN 6 THEN "Reemplazo del filtro de combustible."
+			WHEN 7 THEN "Inspección y reemplazo de correas de transmisión"
+			WHEN 8 THEN "Ajuste y lubricación del sistema de frenos"
+			WHEN 9 THEN "Reemplazo de líquido refrigerante"
+			WHEN 10 THEN "Inspección y cambio de filtro de aire"
+			WHEN 11 THEN "Inspección y reemplazo de pastillas y discos de freno"
+			WHEN 12 THEN "Ajuste y lubricación de cables y palancas de freno y embrague"
+			WHEN 13 THEN "Inspección y reemplazo de amortiguadores y/o suspensión"
+			WHEN 14 THEN "Cambio de líquido de dirección asistida"
+			WHEN 15 THEN "Reemplazo de la batería"
+			WHEN 16 THEN "Inspección y reemplazo de bombillas de luces"
+			WHEN 17 THEN "Ajuste y lubricación de cerraduras y bisagras"
+			WHEN 18 THEN "Inspección y recarga de gas del sistema de aire acondicionado"
+			WHEN 19 THEN "Reemplazo de limpiaparabrisas"
+			WHEN 20 THEN "Inspección y limpieza del sistema de escape"
+			WHEN 21 THEN "Revisión de niveles de fluidos"
+			WHEN 22 THEN "Inspección y reemplazo de la correa de distribución"
+			WHEN 23 THEN "Revisión y ajuste de la presión de los neumáticos"
+			WHEN 24 THEN "Inspección y limpieza del sistema de combustible"
+			WHEN 25 THEN "Revisión de la alineación y balanceo de las ruedas"
+			WHEN 26 THEN "Inspección y reemplazo de los rodamientos de rueda"
+			WHEN 27 THEN "Revisión y ajuste de la tensión de la cadena de distribución"
+			WHEN 28 THEN "Inspección y mantenimiento de sistemas de seguridad (airbags, cinturones de seguridad, etc.)"
+			WHEN 29 THEN "Revisión y ajuste de la presión de los neumáticos"
+			WHEN 30 THEN "Inspección y mantenimiento de sistemas de seguridad (airbags, cinturones de seguridad, etc.)"
+			ELSE "Descripción predeterminada"
+        END;
         SET costo = ROUND(RAND() * 1000, 2);
-        SET garantia = IF(RAND() < 0.5, 'si', 'no');
+        SET garantia = IF(RAND() < 0.5, 'Si', 'No');
         SET fecha_siguiente_mantenimiento = DATE_ADD(fecha_mantenimiento, INTERVAL FLOOR(RAND() * 365) DAY);
 
         -- Insertar el registro
         INSERT INTO Mantenimiento (Id_Mantenimiento, Placa, Fecha_Mantenimiento, Descripcion, Costo, Garantia, Fecha_Siguiente_Mantenimiento)
-        VALUES (contador, placa, fecha_mantenimiento, descripcion, costo, garantia, fecha_siguiente_mantenimiento);
+		VALUES (contador, placa, fecha_mantenimiento, descripcion, costo, garantia, fecha_siguiente_mantenimiento)
+        ON DUPLICATE KEY UPDATE 
+			Placa = VALUES(placa), 
+			Fecha_Mantenimiento=VALUES(fecha_mantenimiento),
+			Descripcion	= VALUES(descripcion),
+            Costo = Values(costo),
+            Garantia = VALUES(garantia),
+            Fecha_Siguiente_Mantenimiento = VALUES(fecha_siguiente_mantenimiento);
 
         SET contador = contador + 1;
     END WHILE;
@@ -184,4 +247,7 @@ END$$
 DELIMITER ;
 
 -- Llamar al procedimiento para insertar registros aleatorios
-CALL InsertarRegistrosAleatorios();
+CALL InsertarPlacas();
+SELECT * from Placas;
+CALL InsertarRegistrosMantenimiento();
+select * from Mantenimiento;
