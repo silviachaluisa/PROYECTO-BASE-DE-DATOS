@@ -1,18 +1,21 @@
-Use sql5681662;
+Drop database if exists base_ejemplo;
+Create database if not exists base_ejemplo;
+Use base_ejemplo;
+ 
 
 
 create table TipoUsuario(
-    Id_Usuario int PRIMARY KEY not null,
+    Id_Usuario int PRIMARY KEY AUTO_INCREMENT,
     Tipo_Usuario VARCHAR(255) not null check(Tipo_usuario in ("Administrador", "Ascesor", "Empleado", "Usuario"))
 );
---CREAR TABLA USUARIOS---------------------------------------------------------------------------------
+-- CREAR TABLA USUARIOS---------------------------------------------------------------------------------
 create table Clientes(
     Id_Cliente int primary key AUTO_INCREMENT,
     Nombres VARCHAR(255) not null, 
     Apellidos varchar (255),
     Cédula BIGINT not null UNIQUE,
     Contacto BIGINT not null,
-    Correo text not null UNIQUE,
+    Correo varchar(255) UNIQUE,
     Fecha_Nacimiento date not null,
     Contraseña VARCHAR(50) not NULL,
     Dirección TEXT not null,
@@ -20,8 +23,29 @@ create table Clientes(
     Foreign Key (Tipo_Usuario) REFERENCES TipoUsuario(Id_Usuario)
 );
 
+
 DELIMITER $$
-CREATE PROCEDURE InsertarRegistrosAleatoriosUsuarios()
+
+CREATE PROCEDURE InsertarTiposUsuario()
+BEGIN
+    DECLARE tipo_usuario VARCHAR(255);
+    DECLARE contador int DEFAULT 1;
+    WHILE contador <= 100 DO
+        SET tipo_usuario = CASE FLOOR(RAND() * 4)
+                        WHEN 0 THEN 'Administrador'
+                        WHEN 1 THEN "Ascesor"
+                        WHEN 2 THEN "Empleado"
+                        WHEN 3 THEN "Usuario"
+                        ELSE 'DEFECTO'
+                    END;
+        INSERT INTO TipoUsuario (Tipo_Usuario) VALUES (tipo_usuario);
+        SET contador = contador + 1;
+    END WHILE;
+END$$
+DELIMITER ;
+-- DROP PROCEDURE InsertarRegistrosClientes;
+DELIMITER $$
+CREATE PROCEDURE InsertarRegistrosClientes()
 BEGIN
     DECLARE contador INT DEFAULT 1;
     DECLARE nombres VARCHAR(255);
@@ -36,49 +60,96 @@ BEGIN
 
     WHILE contador <= 100 DO
         -- Generar valores aleatorios para cada columna
-        SET nombres = CONCAT('Usuario', LPAD(FLOOR(RAND() * 1000), 3, '0'));
-        SET apellidos = CONCAT('Apellido', LPAD(FLOOR(RAND() * 1000), 3, '0'));
+        SET nombres = CASE floor(rand()*31)
+			WHEN 1 THEN "Leandra Anna"
+			WHEN 2 THEN "Severo Luis"
+			WHEN 3 THEN "Lucho Andreu"
+			WHEN 4 THEN "Matías Mauricio"
+			WHEN 5 THEN "Mauricio Guijarro"
+			WHEN 6 THEN "Isaura Leyre"
+			WHEN 7 THEN "Soraya Lola"
+			WHEN 8 THEN "Victoriano Federico"
+			WHEN 9 THEN "Nidia Sandra"
+			WHEN 10 THEN "Teófila Kassandra"
+			WHEN 11 THEN "Trini Keyla"
+			WHEN 12 THEN "Dani Susana"
+			WHEN 13 THEN "Angelina Sofia"
+			WHEN 14 THEN "Jacinta  Solida"
+			WHEN 15 THEN "Samanta Sandy"
+			WHEN 16 THEN "Albano Teodosio"
+			WHEN 17 THEN "Nilo Juan"
+			WHEN 18 THEN "Berta Ivanna"
+			WHEN 19 THEN "Juan Bautista"
+			WHEN 20 THEN "Pepito Sedano"
+			WHEN 21 THEN "Juan Antonio"
+			WHEN 22 THEN "María Fernanda Delia"
+			WHEN 23 THEN "María Luisa"
+			WHEN 24 THEN "Cecilio Apolinar"
+			WHEN 25 THEN "Jenny Manuel"
+			WHEN 26 THEN "María Ángeles"
+			WHEN 27 THEN "Adelina Antonella"
+			WHEN 28 THEN "Emperatriz Rubby"
+			WHEN 29 THEN "Carina Julia"
+			WHEN 30 THEN "Estefanía Danna"
+			ELSE "Celestina Anastasia"
+            END;
+        SET apellidos = CASE floor(rand()*31)
+			WHEN 1 THEN "Palomo Palomares"
+			WHEN 2 THEN "Delgado Durán"
+			WHEN 3 THEN "Rotación de neumáticos"
+			WHEN 4 THEN "Alineación de ruedas"
+			WHEN 5 THEN "Becerra Sánchez"
+			WHEN 6 THEN " Rodriguez Bernad"
+			WHEN 7 THEN " Guardia Céspedes"
+			WHEN 8 THEN "Novoa Cózar"
+			WHEN 9 THEN "Batalla Rios"
+			WHEN 10 THEN " Martí Bello"
+			WHEN 11 THEN "Quero Paredes"
+			WHEN 12 THEN "Fuente Arenas"
+			WHEN 13 THEN "Cerdá-Fernández"
+			WHEN 14 THEN "Moles Colomer"
+			WHEN 15 THEN "Calderón-Olmedo"
+			WHEN 16 THEN "Rodríguez Girón"
+			WHEN 17 THEN "Zamorano Ochoa"
+			WHEN 18 THEN "Villena-Saura"
+			WHEN 19 THEN "Cuéllar Escobar"
+			WHEN 20 THEN "Lastra-Cuervo"
+			WHEN 21 THEN "Castellanos Rueda"
+			WHEN 22 THEN "Gutierrez Solana"
+			WHEN 23 THEN "Samper Sureda"
+			WHEN 24 THEN "Aranda Durán"
+			WHEN 25 THEN "Giménez Calzada"
+			WHEN 26 THEN "Alberola Sandoval"
+			WHEN 27 THEN "Peinado-Morales"
+			WHEN 28 THEN "Ferrándiz Cornejo"
+			WHEN 29 THEN "Vilanova Amador"
+			WHEN 30 THEN "Adelia Campo-Bueno"
+			ELSE "Mantenimiento preventivo al vehiculo"
+            END;
         SET cedula = FLOOR(RAND() * 1000000000) + 1000000000;
         SET contacto = FLOOR(RAND() * 1000000000) + 1000000000;
-        SET correo = CONCAT('usuario', contador, '@dominio.com');
+        SET correo = CONCAT(nombres,".", apellidos, '@hotmail.com');
         SET fecha_nacimiento = DATE_ADD(CURRENT_DATE(), INTERVAL -FLOOR(RAND() * 365 * 30) DAY);
         SET contraseña = CONCAT('Contraseña', LPAD(FLOOR(RAND() * 1000), 3, '0'));
         SET direccion = CONCAT('Dirección', LPAD(FLOOR(RAND() * 1000), 3, '0'));
         SET tipo_usuario = FLOOR(RAND() * 3) + 1; 
 
-     
+        -- Insertar el registro en la tabla Clientes
         INSERT INTO Clientes (Nombres, Apellidos, Cédula, Contacto, Correo, Fecha_Nacimiento, Contraseña, Dirección, Tipo_Usuario)
         VALUES (nombres, apellidos, cedula, contacto, correo, fecha_nacimiento, contraseña, direccion, tipo_usuario);
-
         SET contador = contador + 1;
     END WHILE;
 END$$
+
 DELIMITER ;
-
--- Llamar al procedimiento para insertar registros aleatorios en la tabla de usuarios
-CALL InsertarRegistrosAleatoriosUsuarios();
-------------------------------------------------------------------------------------------------------------------------
--- CREAR TABLA EMPLEADOS----------------------------------------------------------------------------------------------------
-create table Empleados(
-    Id_Empleado int primary key AUTO_INCREMENT,
-    Nombres VARCHAR(255) not null, 
-    Apellidos varchar (255),
-    Cédula BIGINT not null UNIQUE,
-    Contacto BIGINT not null,
-    Correo text not null UNIQUE,
-    Fecha_Nacimiento date not null,
-    Contraseña VARCHAR(50) not NULL,
-    Cargo VARCHAR(255) not null,
-    Salario int not null,
-    Tipo_Usuario int,
-    Foreign Key (Tipo_Usuario) REFERENCES TipoUsuario(Id_Usuario)
-);
-------------------------------------------------------------------------------------------------------------------------------
+CALL InsertarTiposUsuario();
+CALL InsertarRegistrosClientes();
 
 
 
 
---CREAR TABLA VEHICULOS
+
+-- CREAR TABLA VEHICULOS
 create table Vehiculos(
     Placa varchar(10) PRIMARY KEY not null,
     Marca text not null,
@@ -87,6 +158,7 @@ create table Vehiculos(
     Color varchar(30) not null,
     Id_Cliente int,
     Foreign Key (Id_Cliente) REFERENCES Clientes(Id_Cliente)
+);
 
 -- Registros aleatoreos de vehiculos
     DELIMITER $$
@@ -135,9 +207,7 @@ CALL InsertarRegistrosAleatoriosVehiculos(); -- Llamada al procedimiento almacen
  
 SELECT * FROM Vehiculos; -- Consulta para ver los registros insertados en la tabla
 
-);
-
---CREAR TABLA MANTENIMIENTO Y PLACAS
+-- CREAR TABLA MANTENIMIENTO Y PLACAS (MARCELO)-----------------------------------------------------
 
 Create table if NOT exists Placas(
 	id int PRIMARY KEY AUTO_INCREMENT,
@@ -250,4 +320,12 @@ DELIMITER ;
 CALL InsertarPlacas();
 SELECT * from Placas;
 CALL InsertarRegistrosMantenimiento();
-select * from Mantenimiento;
+select
+	p.Placa,
+    m.Fecha_Mantenimiento,
+    m.Descripcion,
+    m.Costo,
+    m.Garantia,
+    m.Fecha_Siguiente_Mantenimiento
+from Mantenimiento m
+Join Placas p on m.Placa=p.id;
